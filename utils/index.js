@@ -1,18 +1,26 @@
-const log4js  = require('koa-log4')
-const moment  = require('moment')
-const crypto  = require('crypto')
-const joi     = require('joi')
-const bcrypt  = require('bcrypt')
-const logConf = require('../config/logConf')
+const joi      = require('joi')
+const moment   = require('moment')
+const crypto   = require('crypto')
+const bcrypt   = require('bcrypt')
+const log4js   = require('koa-log4')
+const xml2json = require('xml2json')           // xml 转json
+const json2xml = require('json2xml')           // json 转 xml
+const logConf  = require('../config/logConf')  
+
 
 log4js.configure(logConf)
 const logger = log4js.getLogger('app')
 
 module.exports           = logger
 module.exports.joi       = joi
-module.exports.logHttp = log4js.koaLogger(log4js.getLogger('http'), {
+module.exports.logHttp   = log4js.koaLogger(log4js.getLogger('http'), {
   level: 'auto'
 })
+
+module.exports.x2j = xml2json.toJson
+
+module.exports.j2x = xml2json.json2xml
+
 
 /**
  * 密码加密
@@ -76,6 +84,36 @@ module.exports.base64 = function (str) {
 module.exports.trimStr = function (str) {
   return str.replace(/(^\s*)|(\s*$)/g, "")
 }
+
+/**
+ * 对参数对象进行字典排序
+ * @param  {对象} args 签名所需参数对象
+ * @return {字符串}    排序后生成字符串
+ */
+module.exports.raw = function (args) {
+  var keys = Object.keys(args)
+  keys = keys.sort()
+  var newArgs = {}
+  keys.forEach(function (key) {  // 键值不为空 且不等于sign
+    if (args[key] !== '' && key !== 'sign') newArgs[key] = args[key]
+  })
+
+  var string = ''
+  for (var k in newArgs) {
+    string += '&' + k + '=' + newArgs[k]
+  }
+  string = string.substr(1)
+  return string
+}
+
+// 微信支付签名
+module.exports.signWe = function (data) {
+  let sig = module.exports.raw(data)
+  sig += '&key=' + we.key
+  sig = module.exports.md5(sig).toUpperCase()
+  return sig
+}
+
 
 /**
  * 生成 API 返回数据

@@ -14,6 +14,10 @@ base: &base
   /user/accout/:id#GET: allow
   /user/accout/:id#PATCH: allow
 
+  # order
+  /order#POST: allow
+
+
 
 visitor: &visitor
 
@@ -37,6 +41,17 @@ admin: &admin
   /oss#GET: allow
   /qiniu#GET: allow
   /upload#post: allow
+
+  # order
+  /order/:id#DELETE: allow
+
+  # porduct
+  /product#GET: allow
+  /product#POST: allow
+  /product/:id#GET: allow
+  /product/:id#PATCH: allow
+  /product/:id#DELETE: allow
+
 
   <<: *base
   <<: *user

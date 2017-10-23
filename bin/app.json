@@ -1,7 +1,7 @@
 {
     "apps" : [
         {
-          "name":               "mrsix",
+          "name":               "wepay",
           "max_memory_restart": "300M",
           "script":             "index.js",
           "log_date_format":    "YYYY-MM-DD HH:mm Z",

@@ -4,3 +4,7 @@ config.js
 dist
 /config/custom.js
 *.log
+static/iclean/
+npm-debug.log
+config/we.js
+static/index*.html

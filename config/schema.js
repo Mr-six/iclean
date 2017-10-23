@@ -41,8 +41,39 @@ const article = $.joi.object().keys({
   sendAt:      $.joi.date().empty(''),
 })
 
+/**
+* 订单信息验证
+*/
+const order  =        $.joi.object().keys({
+  user:               $.joi.any(),                                        // 关联id
+  device_info:        $.joi.string().min(3).max(32).required(),           // 设备编号
+  body:               $.joi.string().min(3).max(32).required(),           // 商品描述
+  out_trade_no:       $.joi.string().min(3).max(32).required(),           // 商户订单
+  total_fee:          $.joi.number().integer().required(),                // 标价金额 单位为分
+  spbill_create_ip:   $.joi.string().ip({version: ['ipv4']}).required(),  // ip
+  notify_url:         $.joi.string().min(3).max(256).required(),          // 通知地址
+  trade_type:         $.joi.string().min(3).max(16).required(),           // 交易类型
+  openid:             $.joi.string().min(3).max(32),                      // 微信用户的openid
+  detail:             $.joi.string().min(3).max(6000),                    // 商品详情
+  attach:             $.joi.string().min(3).max(127),                     // 附加数据
+})
+
+/**
+* 商品信息验证
+*/
+const product  =      $.joi.object().keys({
+  user:               $.joi.any(),                                        // 关联id
+  device_info:        $.joi.string().min(3).max(32).required(),           // 设备编号
+  body:               $.joi.string().min(3).max(32).required(),           // 商品描述
+  detail:             $.joi.string().min(3).max(6000),                    // 商品详情
+  total_fee:          $.joi.number().integer().required(),                // 标价金额 单位为分
+  pic:                $.joi.string().uri(),                               // 商品图片
+ })
+
 module.exports = {
   user,
   article,
   modifyIofo,
+  order,
+  product,
 }

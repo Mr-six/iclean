@@ -10,6 +10,8 @@ const path       = require('path')
 const onerror    = require('koa-onerror')
 const restc      = require('restc')
 const {proxy}    = require('koa-nginx')
+const xmlParser = require('koa-xml-body')
+
 /**
  * app instance
  */
@@ -39,10 +41,17 @@ app.use(static(config.static))
 
 app.use(restc.koa2())  //
 
+// xml解析中间价
+app.use(xmlParser({
+  xmlOptions: {
+    explicitArray: false
+  }
+}))
+
 app.use(bodypaser({
   formLimit: '10mb'
 }))
-app.use(cors())
+app.use(cors(config.cors))
 
 /**
  * routers
