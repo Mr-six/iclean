@@ -6,11 +6,11 @@ const product      = new Router()
 /**
  * product router
  */
-product.get('/',        productApi.all)       // 查找
-       .post('/',       productApi.create)    // 新建
+product.get('/',               authToken, productApi.all)       // 查找
+       .post('/',              authToken, productApi.create)    // 新建
 
-product.get('/:id',     productApi.findById)  // 查看
-       .patch('/:id',   productApi.update)    // 更新
-       .delete('/:id',  productApi.delete)    // 删除
+product.get('/detail/:id',     authToken, productApi.findById)  // 查看
+       .patch('/detail/:id',   authToken, productApi.update)    // 更新
+       .delete('/detail/:id',  authToken, productApi.delete)    // 删除
        
 module.exports = product

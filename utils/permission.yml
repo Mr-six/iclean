@@ -17,6 +17,9 @@ base: &base
   # order
   /order#POST: allow
 
+  # wechat
+  /wx/recharge#POST: allow
+
 
 
 visitor: &visitor
@@ -48,9 +51,9 @@ admin: &admin
   # porduct
   /product#GET: allow
   /product#POST: allow
-  /product/:id#GET: allow
-  /product/:id#PATCH: allow
-  /product/:id#DELETE: allow
+  /product/detail/:id#GET: allow
+  /product/detail/:id#PATCH: allow
+  /product/detail/:id#DELETE: allow
 
 
   <<: *base

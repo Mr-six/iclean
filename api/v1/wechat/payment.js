@@ -1,83 +1,83 @@
-// const https = require('https')
-
-
+/**
+ * 微信订单api
+ */
 const axios = require('axios')
+const {we}  = require('../../../config')
+const $     = require('../../../utils')
 
-const { we } = require('../../config')
-const $ = require('../utils')
+const defaults = {  // 默认配置
+  baseURL: we.url,
+  timeout: 1000*5,
+}
+Object.assign(axios.defaults, defaults)
 
-// const querystring = require('querystring')
+/**
+ * 统一下单接口
+ * @param {String} url 目标url
+ * @param {Object} params 统一下单对象
+ * params 对象包含: 
+ * - device_info  设备信息
+ * - body         商品名称
+ * - total_fee    总金额
+ * - trade_type   交易类型 小程序:JSAPI 
+ * - detail       商品详情(选填)
+ * 
+ * - out_trade_no 默认生成
+ * - notify_url   默认配置
+ */
+async function req (url, params, ctx) {
+  let {appid, mch_id, notify_url, device_info} = we
 
+  // 商户订单号 32个字符内
+  let out_trade_no = params.out_trade_no ? (params.device_info + $.createTimestamp()) : (device_info + $.createTimestamp(false))
 
-class WeixinPayment {
-  constructor(opts = {}) {
-    this.$opts = opts
-    this.$req = axios.create({
-      baseURL: we.url,
-      timeout: 1000*5,
-      // httpsAgent: new https.Agent({
-      //   pfx: opts.pfx
-      // })
-    })
-  }
+  // 获取ip
+  let regip = /(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}/
+  let ip = ctx.request.headers['X-Real-IP'] || ctx.request.headers['x-forwarded-for'] || ctx.request.ip
+  if (ip.match(regip)) ip = ip.match(regip)[0]
+  else ip = '192.168.0.1'
 
-  sign(params) {
-    const qs = Object.keys(params)
-      .filter(key => key && params[key] && !['sign'].includes(key))
-      .sort()
-      .map(key => `${key}=${params[key]}`).join('&')
-    return $.md5(qs).toUpperCase()
-  }
+  params = Object.assign({
+    appid,
+    mch_id,
+    out_trade_no,
+    spbill_create_ip: ip,
+    notify_url,
+    nonce_str: $.createNonceStr(),
+  }, params)
 
-  req(url, params) {
-    let { appid, mch_id } = this.$opts
-    if (params.appid) appid = params.appid  // 传入appid (微信小程序)
-    Object.assign(params, {
-      appid,
-      mch_id,
-      nonce_str: $.createNonceStr(),
-    })
+  params.sign = $.signWe(params)  // 执行签名
 
-    // console.dir(params)
-    
-    params.sign = $.signWe(params)
+  let body = $.j2x(params)        // Object转为xml
 
-    // console.log('签名： ' + params.sign)
-    
-
-    let body = $.j2x(params, { header: false })
-    body = '<xml>' + body + '<\/xml>'
-    // console.dir(body)
-    
-    return this.$req
-      .post(url, body)
-      .then(ret => $.x2j(ret.data))
-  }
-
-  createOrder(params = {}) {
-    return this.req('/pay/unifiedorder', params)
-  }
-
-  queryOrder(params = {}) {
-    return this.req('/pay/orderquery', params)
-  }
-
-  closeOrder(params = {}) {
-    return this.req('/pay/closeorder', params)
-  }
-
-  reverseOrder(params = {}) {
-    return this.req('/secapi/pay/reverse', params)
-  }
-
-  refund(params = {}) {
-    return this.req('/secapi/pay/refund', params)
-  }
-
-  queryRefund(params = {}) {
-    return this.req('/pay/refundquery', params)
-  }
-
+  return axios
+        .post(url, body)
+        .then(({data}) => $.x2j(data))
 }
 
-module.exports = WeixinPayment
+module.exports = {
+  // 下单
+  createOrder(ctx, params = {}) {
+    return req('/pay/unifiedorder', params, ctx)
+  },
+  // 查询
+  queryOrder(ctx, params = {}) {
+    return req('/pay/orderquery', params, ctx)
+  },
+  // 关闭订单
+  closeOrder(ctx, params = {}) {
+    return req('/pay/closeorder', params, ctx)
+  },
+
+  reverseOrder(ctx, params = {}) {
+    return req('/secapi/pay/reverse', params, ctx)
+  },
+
+  refund(ctx, params = {}) {
+    return req('/secapi/pay/refund', params, ctx)
+  },
+
+  queryRefund(ctx, params = {}) {
+    return req('/pay/refundquery', params, ctx)
+  },
+}

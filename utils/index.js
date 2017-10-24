@@ -6,7 +6,7 @@ const log4js   = require('koa-log4')
 const xml2json = require('xml2json')           // xml 转json
 const json2xml = require('json2xml')           // json 转 xml
 const logConf  = require('../config/logConf')  
-
+const we       = require('../config/we')
 
 log4js.configure(logConf)
 const logger = log4js.getLogger('app')
@@ -17,9 +17,13 @@ module.exports.logHttp   = log4js.koaLogger(log4js.getLogger('http'), {
   level: 'auto'
 })
 
-module.exports.x2j = xml2json.toJson
+module.exports.x2j = function (xml) {
+  return xml2json.toJson(xml,{object: true}).xml
+}
 
-module.exports.j2x = xml2json.json2xml
+module.exports.j2x = function (obj) {
+  return `<xml>${json2xml(obj)}</xml>`
+}
 
 
 /**
@@ -42,8 +46,8 @@ module.exports.decrypt = function (passwd, hash) {
 /**
  * 生成时间戳
  */
-module.exports.createTimestamp = function () {
-  return parseInt(new Date().getTime() / 1000) + ''
+module.exports.createTimestamp = function (unix = true) {
+  return unix ? parseInt(new Date().getTime() / 1000) + '' : parseInt(new Date().getTime()) + ''
 }
 
 /**
