@@ -179,8 +179,8 @@ userApi.methods.sendTelCode = async function (ctx) {
   let phone = ctx.request.body.phone
   let reg = /^(0|86|17951)?(13[0-9]|14[579]|15[0-3,5-9]|17[0135678]|18[0-9])[0-9]{8}$/
   if(!reg.test(phone)) return $.result(ctx, '请输入正确的手机号码')
-  let exist = await userModel.findOne({"phone": phone})
-  if (exist) return $.result(ctx, '手机已注册')
+  // let exist = await userModel.findOne({"phone": phone})
+  // if (exist) return $.result(ctx, '手机已注册')
   try {
     let res = await tool.veryfyCode.sendTelCode(phone, 300)
     if (res) $.result(ctx, res)

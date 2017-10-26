@@ -14,5 +14,8 @@ const wechat        = new Router()
 //       .delete('/:id', authToken, wechatApi.delete)    // 删除
 
 wechat.post('/recharge', authToken, wechatApi.weappCreateOrder)  // 微信小程序下单
+      .post('/saveOpenid',          wechatApi.saveOpenid)        // 保存openid
+      .post('/decrypt',             wechatApi.decrypt)           // 数据解密
+      .post('/login',               wechatApi.weLogin)           // 微信手机登陆
        
 module.exports = wechat
