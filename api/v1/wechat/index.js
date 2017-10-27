@@ -5,12 +5,14 @@ const auth = require('../../../utils/auth')
 const decryptData = require('./decryptData')
 const redis  = require('../../../utils/redis')
 const tool  = require('../../tool')
+const checkSign = require('./checkSign')
 const {we, schema}  = require('../../../config')
 const {productModel, orderModel, userModel} = require('../../../models').v1
 
 /**
  * 微信小程序支付接口
  * @param {koa} ctx 
+ * TODO: 添加token 项的逻辑
  * 发送数据:
  * - product_id 商品id
  * - openid 用户openid
@@ -22,6 +24,7 @@ async function weappCreateOrder (ctx) {
   if (!product_id) return $.result(ctx, 'param err')
   try {
     let data = await productModel.findById(product_id)  // 数据库查找商品信息
+    if(!data) return $.result(ctx, 'no product')
     body.body = data.body                // 商品名称
     body.total_fee = data.total_fee      // 商品价格
     body.detail = data.detail            // 商品简介
@@ -45,13 +48,66 @@ async function weappCreateOrder (ctx) {
     $.result(ctx, weappParams)
 
     if (res.return_code === 'SUCCESS') {  // 使用数据库写入订单
-      body.user = ctx.user.id
       orderModel.create(body)
     }
   } catch (e) {
     $.error(e)
     $.result(ctx, 'err')
   }
+}
+
+/**
+ * 订单支付状态查询
+ * 根据　query　参数　的　transaction_id　或者　out_trade_no　查询订单支付状态
+ * @param {koa} ctx 
+ */
+async function checkPaied (ctx) {
+  let query = ctx.query
+  let hasKey = query.transaction_id || query.out_trade_no
+  if (!hasKey) return $.result(ctx, 'params err')
+  try {
+    let res = await pay.queryOrder(ctx, query)
+    if (res) $.result(ctx, 'params err')
+    else $.result(ctx, 'params err')
+  } catch (e) {
+    console.dir(e)
+    ctx.body = 'bad query'
+  }
+}
+
+/**
+ * 微信订单支付成功后回调
+ * 根据回调结果更新订单状态
+ * @param {koa} ctx 
+ */
+async function weCallBack (ctx) {
+  let body = ctx.request.body
+  let {xml} = body
+  let {
+    transaction_id,   // 微信订单id
+    out_trade_no,     // 商户订单id
+    result_code,      // 支付结果
+    return_code,      // 返回结果
+    sign,
+  } = xml
+
+  if (return_code === 'SUCCESS' &&　result_code　=== 'SUCCESS') {
+    let isRs = checkSign(xml)  // 签名验证
+    ctx.type = 'xml'
+    ctx.body = xmlO
+    let query = {
+      out_trade_no
+    }
+    let info = {
+      transaction_id,
+      payed: true,
+    }
+    try {
+      let updata = await orderApi.payUpdata(query, info)
+    } catch (e) {
+      $.error(e)
+    }
+  }  
 }
 
 /**
@@ -188,9 +244,13 @@ async function decrypt (ctx) {
 }
 
 
+
+
 module.exports = {
   weappCreateOrder,
   weLogin,
   saveOpenid,
   decrypt,
+  weCallBack,
+  checkPaied,
 }

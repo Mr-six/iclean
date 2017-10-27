@@ -13,9 +13,10 @@ const wechat        = new Router()
 //       .patch('/:id',             wechatApi.update)    // 更新
 //       .delete('/:id', authToken, wechatApi.delete)    // 删除
 
-wechat.post('/recharge', authToken, wechatApi.weappCreateOrder)  // 微信小程序下单
+wechat.post('/createOrder',         wechatApi.weappCreateOrder)  // 微信小程序下单
       .post('/saveOpenid',          wechatApi.saveOpenid)        // 保存openid
       .post('/decrypt',             wechatApi.decrypt)           // 数据解密
       .post('/login',               wechatApi.weLogin)           // 微信手机登陆
-       
+      .post('/weCallBack',          wechatApi.weCallBack)        // 微信支付回调地址
+     
 module.exports = wechat
