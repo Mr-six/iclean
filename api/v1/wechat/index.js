@@ -7,7 +7,7 @@ const redis  = require('../../../utils/redis')
 const tool  = require('../../tool')
 const checkSign = require('./checkSign')
 const {we, schema}  = require('../../../config')
-const {productModel, orderModel, userModel, orderApi} = require('../../../models').v1
+const {productModel, orderModel, userModel} = require('../../../models').v1
 
 /**
  * 微信小程序支付接口
@@ -103,7 +103,7 @@ async function weCallBack (ctx) {
       payed: true,
     }
     try {
-      let updata = await orderApi.update(query, info)
+      let updata = await orderModel.update(query, info)
     } catch (e) {
       $.error(e)
     }
