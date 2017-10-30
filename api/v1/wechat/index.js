@@ -103,7 +103,7 @@ async function weCallBack (ctx) {
       payed: true,
     }
     try {
-      let updata = await orderApi.updata(query, info)
+      let updata = await orderApi.update(query, info)
     } catch (e) {
       $.error(e)
     }
