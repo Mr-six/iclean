@@ -94,7 +94,7 @@ async function weCallBack (ctx) {
   if (return_code === 'SUCCESS' &&　result_code　=== 'SUCCESS') {
     let isRs = checkSign(xml)  // 签名验证
     ctx.type = 'xml'
-    ctx.body = xmlO
+    ctx.body = isRs
     let query = {
       out_trade_no
     }
