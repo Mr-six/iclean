@@ -26,10 +26,7 @@ Object.assign(axios.defaults, defaults)
  * - notify_url   默认配置
  */
 async function req (url, params, ctx) {
-  let {appid, mch_id, notify_url, device_info} = we
-
-  // 商户订单号 32个字符内
-  let out_trade_no = params.out_trade_no ? (params.device_info + $.createTimestamp()) : (device_info + $.createTimestamp(false))
+  let {appid, mch_id, notify_url} = we
 
   // 获取ip
   let regip = /(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}/

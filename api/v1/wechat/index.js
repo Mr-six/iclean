@@ -31,6 +31,7 @@ async function weappCreateOrder (ctx) {
     body.device_info = data.device_info  // 设备编号
     body.trade_type = 'JSAPI'            // 交易类型 小程序
     body.appid = we.appid_app            // 小程序id
+    body.out_trade_no =(data.device_info + $.createTimestamp()).slice(0, 32)  // 订单编号  32位以内
 
     let res = await pay.createOrder(ctx, body)  // 调用接口创建订单
     // $.info(res)
