@@ -37,7 +37,6 @@ async function req (url, params, ctx) {
   params = Object.assign({
     appid,
     mch_id,
-    out_trade_no,
     spbill_create_ip: ip,
     notify_url,
     nonce_str: $.createNonceStr(),
