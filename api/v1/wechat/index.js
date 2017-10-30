@@ -92,11 +92,8 @@ async function weCallBack (ctx) {
     sign,
   } = xml
 
-  $.info('微信回调', xml)
-
   if (return_code === 'SUCCESS' &&　result_code　=== 'SUCCESS') {
     let isRs = checkSign(xml)  // 签名验证
-    $.info('返回微信数据:', isRs)
     ctx.type = 'xml'
     ctx.body = isRs
     let query = {
@@ -108,7 +105,6 @@ async function weCallBack (ctx) {
     }
     try {
       let updata = await orderModel.update(query, info)
-      $.debug('微信订单更新', updata)
     } catch (e) {
       $.error(e)
     }
