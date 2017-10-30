@@ -67,7 +67,7 @@ const product  =      $.joi.object().keys({
   body:               $.joi.string().min(3).max(32).required(),           // 商品描述
   detail:             $.joi.string().min(3).max(6000),                    // 商品详情
   total_fee:          $.joi.number().integer().required(),                // 标价金额 单位为分
-  pic:                $.joi.string().uri(),                               // 商品图片
+  // pic:                $.joi.string().uri(),                               // 商品图片
  })
 
 module.exports = {
