@@ -19,6 +19,7 @@ base: &base
 
   # wechat
   /wx/recharge#POST: allow
+  /wx/jssdk#GET: allow
 
 
 

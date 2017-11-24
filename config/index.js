@@ -13,7 +13,7 @@ module.exports = {
   proxyUrl,                                           // 代理 url
   cors: {origin: '*'},                                // 允许跨域设置
   limitDb:      20,                                   // 默认每页数据条数
-  tokenExpires: '7d',                                 // token 有效时间 7天
+  tokenExpires: '100d',                               // token 有效时间 100天
   port: isProd  ? '8003' : '8003',                    // 端口
   db:           'mongodb://127.0.0.1:27017/iclean',    // 生产数据库
   dbtest:       'mongodb://127.0.0.1:27017/test',     // 测试数据库

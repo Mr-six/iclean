@@ -19,6 +19,7 @@
     "axios": "^0.17.0",
     "bcrypt": "^1.0.3",
     "bluebird": "^3.5.1",
+    "co-wechat-api": "^3.3.0",
     "joi": "^10.6.0",
     "js-yaml": "^3.10.0",
     "json2xml": "^0.1.3",

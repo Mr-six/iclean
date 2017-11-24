@@ -6,8 +6,12 @@ const decryptData = require('./decryptData')
 const redis  = require('../../../utils/redis')
 const tool  = require('../../tool')
 const checkSign = require('./checkSign')
+const WechatAPI = require('co-wechat-api')  // 微信api
 const {we, schema}  = require('../../../config')
 const {productModel, orderModel, userModel} = require('../../../models').v1
+
+// co-wechat-api
+const api = new WechatAPI(we.appid, we.appsecret)  // 主要 api
 
 /**
  * 微信小程序支付接口
@@ -244,6 +248,32 @@ async function decrypt (ctx) {
   }
 }
 
+/**
+ * 获取js sdk 配置调用
+ * @param  {Object} get 发送参数：var param = {debug: false, jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'], url: 'http://www.xxx.com'}
+ * @return {Object}  返回
+ * {
+    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+    appId: '', // 必填，公众号的唯一标识
+    timestamp: , // 必填，生成签名的时间戳
+    nonceStr: '', // 必填，生成签名的随机串
+    signature: '',// 必填，签名，见附录1
+    jsApiList: [] // 必填，需要使用的JS接口列表
+  }
+ */
+async function getJsConfig (ctx) {
+  let param = ctx.query
+  if (!param.url) {
+    $.result(ctx, 'no url')
+  } else {
+    try {
+      let jsConfig = await api.getJsConfig(param)
+    } catch (e) {
+      $.result(ctx, 'err')
+      $.error(e)
+    }
+  }
+}
 
 
 
@@ -254,4 +284,5 @@ module.exports = {
   decrypt,
   weCallBack,
   checkPaied,
+  getJsConfig,
 }
