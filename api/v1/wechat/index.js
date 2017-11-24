@@ -268,6 +268,7 @@ async function getJsConfig (ctx) {
   } else {
     try {
       let jsConfig = await api.getJsConfig(param)
+      $.result(ctx, jsConfig)
     } catch (e) {
       $.result(ctx, 'err')
       $.error(e)
