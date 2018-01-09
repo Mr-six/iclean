@@ -50,7 +50,7 @@ module.exports = class Base {
    * @param {Object} options 参数
    */
   async all(query, page, limit, options) {
-    const _limit   = limit || limitDb // 每页条数 20
+    const _limit   = limit || ''
     const _page    = page || 0  // 起始页
     const sort     = options && options.sort || { _index: -1 }    // 排序规则
     const offset   = options && options.offset || _limit * _page  // 起始位置
@@ -120,6 +120,19 @@ module.exports = class Base {
   }
 
   /**
+ * 数组push
+ * @param {Object} query  查询对象
+ * @param {Object} info  push对象
+ */
+  async push(query, info) {
+    try {
+      return await this.model.update(query, { $push: info })
+    } catch (e) {
+      $.error(e)
+    }
+  }
+
+  /**
    * 删除数据
    * @param {Object} query  查询对象
    * @param {Object} options 参数
@@ -183,6 +196,13 @@ function addMethods (_this) {
     const item = await _this.findOne(query)
     if (!item) { return -1 }
     return await _this.update(query, info)
+  }
+
+  /**
+  * push数据
+  */
+  methods.push = async function (query, info) {
+    return await _this.push(query, info)
   }
 
   /**

@@ -21,6 +21,9 @@ base: &base
   /wx/recharge#POST: allow
   /wx/jssdk#GET: allow
 
+  # redditSub
+  /redditSub#GET: allow
+
 
 
 visitor: &visitor

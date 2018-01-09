@@ -26,7 +26,7 @@ function addMethods(_this) {
     let q = ctx.query
     let {search, start, limit, options} = q
     start = Number(start) || 0
-    limit = Number(limit) || limitDb
+    limit = Number(limit)
     if (!$.isEmpty(search)) query[_this.search] = new RegExp(search)
     $.result(ctx, await _this.model.all(query, start, limit, options))
   }
