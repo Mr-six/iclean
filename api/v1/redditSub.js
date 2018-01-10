@@ -25,18 +25,18 @@ redditSubApi.methods.create = async (name) => {
 
 /**
  * reddit 向订阅表中添加数据
- * @param {String} name reddit
+ * @param {String} id 币种id
  * @param {Array} info 某时间此版块的订阅人数
  */
-redditSubApi.methods.push = async (name, info) => {
-  let exist = await redditSubApi.model.findOne({ name: name })
+redditSubApi.methods.push = async (id, info) => {
+  let exist = await redditSubApi.model.findOne({ id: id })
   if (!exist) {  // 如果数据列表不存在,则创建
-    let res = await redditSubApi.model.create({ name: name }, {
+    let res = await redditSubApi.model.create({ id: id }, {
       reddit_subscribers_num: []
     })
   }
 
-  let res = await redditSubApi.model.push({ name: name }, {
+  let res = await redditSubApi.model.push({ id: id }, {
     reddit_subscribers_num: info
   })
   return res

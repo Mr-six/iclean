@@ -2,11 +2,12 @@ const $ = require('../../utils')
 const Base = require('../base')
 
 const RedditSub = new Base('RedditSub', {
-  name: {
+  id: {                                   // 货币id
     type: String,
     index: true,
   },
-  reddit_subscribers_num: Array,
+  reddit_t: String,                       // reddit 版块名称
+  reddit_subscribers_num: Array,          // 订阅数量
 })
 
 
