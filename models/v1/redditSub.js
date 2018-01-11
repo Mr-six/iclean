@@ -6,7 +6,7 @@ const RedditSub = new Base('RedditSub', {
     type: String,
     index: true,
   },
-  reddit_t: String,                       // reddit 版块名称
+  rid: String,                            // reddit 版块名称
   reddit_subscribers_num: Array,          // 订阅数量
 })
 

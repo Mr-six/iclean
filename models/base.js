@@ -25,12 +25,12 @@ module.exports = class Base {
     // schema.virtual('updated_at').get(function () {
     //   return $.dateformat(this.updatedAt)
     // })
-    schema.options.toObject.transform = function (doc, ret, options) {
-      delete ret.id
-    }
-    schema.options.toJSON.transform = function (doc, ret, options) {
-      delete ret.id
-    }
+    // schema.options.toObject.transform = function (doc, ret, options) {
+    //   delete ret.id
+    // }
+    // schema.options.toJSON.transform = function (doc, ret, options) {
+    //   delete ret.id
+    // }
 
     this.schema  = schema
     this.model   = mongoose.model(name, schema)

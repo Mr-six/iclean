@@ -12,13 +12,12 @@ let redditSubApi = new Base({
  * 初始化 reddit 订阅列表
  * @param {String} name reddit
  */
-redditSubApi.methods.create = async (name) => {
+redditSubApi.methods.create = async (info) => {
   let res
-  let exist = await redditSubApi.model.findOne({ name: name })
+  const {id,rid} = info  // 货币id和reddit id
+  let exist = await redditSubApi.model.findOne({ id: id })
   if (!exist) {
-    res = await redditSubApi.model.create({ name: name }, {
-      reddit_subscribers_num: []
-    })
+    res = await redditSubApi.model.create({ id: id, rid: rid, reddit_subscribers_num: [] })
   }
   return res ? res : 'exist'
 }
@@ -40,6 +39,20 @@ redditSubApi.methods.push = async (id, info) => {
     reddit_subscribers_num: info
   })
   return res
+}
+
+/**
+ * 获取币种列表
+ * @param {String} name reddit
+ */
+redditSubApi.methods.getall = async (info) => {
+  const res = await redditSubApi.model.all(info)
+  return res
+}
+
+redditSubApi.methods.getById = async (ctx) => {
+  const id = ctx.params.id
+  $.result(ctx, await redditSubApi.model.all({ id: id }))
 }
 
 module.exports = redditSubApi.methods
