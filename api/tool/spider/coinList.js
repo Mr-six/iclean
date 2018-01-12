@@ -11,9 +11,10 @@ const { redditSubApi } = require('../../index').v1
 
 // ---- config ----
 const base   = 'https://api.coinmarketcap.com/v1/ticker/'  // 目标地址
-const num    = '50'                                          // 数量(不填默认为100)
-const target = `${base}?limit=${num}`                      // 请求目标
-const l      = pl(1)                                       // puppeteer并发数量
+const num    = ''                                         // 总数量(不填默认为100)
+const rNum   = 5                                          // 单次爬取数量
+const target = `${base}?limit=${num}`                     // 请求目标
+const l      = pl(1)                                      // puppeteer并发数量
 // ---- config ----
 
 
@@ -46,12 +47,13 @@ async function getCoinList () {
 
 
 // puppeteer 爬虫
-async function getRedditId (urlArr) {
+async function getRedditId (urlArr, start) {
   if (!urlArr || urlArr.length < 0) return
   try {
     
     let rList = []  // 请求列表
-    urlArr.forEach( el => {
+    urlArr.forEach( (el, i) => {
+      if (i < start || i > start + rNum) return
       const {id, idUrl} = el
       rList.push(l(async () => {
         const browser = await pupp.launch({ headless: true})
@@ -66,7 +68,9 @@ async function getRedditId (urlArr) {
           height: 1080,
         })
         await page.waitForSelector('#reddit a', { timeout: 0 })
-        const rid = await page.$eval('#reddit a', el => el.href.match(/https?.*\/r\/(.*)\//)[1])        
+        const rid = await page.$eval('#reddit a', el => el.href.match(/https?.*\/r\/(.*)\//)[1])
+        await page.close()
+        await browser.close()
         $.info({
           id: el.id,
           rid,
@@ -75,12 +79,10 @@ async function getRedditId (urlArr) {
           id,
           rid,
         })
-        await page.close()
-        await browser.close()
-        $.info('开始等待')
-        $.sleep(10)
-        $.info('等待完成了')
-
+        // if (i % 5 === 0) {  // 每隔5个休息十秒 等待chrome退出完全
+        //   $.info('等待十秒')
+        //   $.sleep(10)
+        // }
       }))
     })
 
@@ -96,9 +98,10 @@ async function getRedditId (urlArr) {
 }
 
 
-async function initCoinList () {
+async function initCoinList (start) {
   let list = await getCoinList()
-  await getRedditId(list)
+  await getRedditId(list, start)
+  return `起始位置: ${start}, 完成抓取${rNum}`
 }
 
 module.exports = {
