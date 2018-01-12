@@ -11,7 +11,7 @@ const { redditSubApi } = require('../../index').v1
 
 // ---- config ----
 const base   = 'https://api.coinmarketcap.com/v1/ticker/'  // 目标地址
-const num    = ''                                          // 数量(不填默认为100)
+const num    = '50'                                          // 数量(不填默认为100)
 const target = `${base}?limit=${num}`                      // 请求目标
 const l      = pl(1)                                       // puppeteer并发数量
 // ---- config ----
@@ -22,7 +22,9 @@ const l      = pl(1)                                       // puppeteer并发数
  */
 async function getCoinList () {
   try {
-    const { data } = await axios.get(target)  // 币种信息列表
+    const { data } = await axios.get(target, {
+      timeout: 30000
+    })                                       // 币种信息列表
     let urlArray = []                       // 币种页面数组
     data.forEach( el => {                   // 遍历列表 提取币种id
       let id = el.id                        // 币种id
@@ -47,11 +49,12 @@ async function getCoinList () {
 async function getRedditId (urlArr) {
   if (!urlArr || urlArr.length < 0) return
   try {
-    const browser = await pupp.launch({})
+    
     let rList = []  // 请求列表
     urlArr.forEach( el => {
       const {id, idUrl} = el
       rList.push(l(async () => {
+        const browser = await pupp.launch({ headless: true})
         const page = await browser.newPage()
         await page.goto(idUrl, {
           timeout: 0,
@@ -63,8 +66,7 @@ async function getRedditId (urlArr) {
           height: 1080,
         })
         await page.waitForSelector('#reddit a', { timeout: 0 })
-        const rid = await page.$eval('#reddit a', el => el.href.match(/https?.*\/r\/(.*)\//)[1])
-        await page.close()
+        const rid = await page.$eval('#reddit a', el => el.href.match(/https?.*\/r\/(.*)\//)[1])        
         $.info({
           id: el.id,
           rid,
@@ -73,6 +75,11 @@ async function getRedditId (urlArr) {
           id,
           rid,
         })
+        await page.close()
+        await browser.close()
+        $.info('开始等待')
+        $.sleep(10)
+        $.info('等待完成了')
 
       }))
     })
@@ -81,7 +88,7 @@ async function getRedditId (urlArr) {
 
     $.info('列表更新完成')
     
-    await browser.close()
+    // await browser.close()
 
   } catch (e) {
     $.error(e)

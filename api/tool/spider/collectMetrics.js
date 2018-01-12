@@ -6,7 +6,7 @@ const axios = require('axios')
 const schedule = require('node-schedule')
 const $ = require('../../../utils')
 const { pl } = require('./utils')
-// const { redditSubApi } = require('../../index').v1
+const { redditSubApi } = require('../../index').v1
 
 // ---- config ----
 const target = 'http://redditmetrics.com/r/'  // 目标地址
@@ -86,4 +86,4 @@ async function test () {
 
 
 
-module.exports = test
+module.exports = getList
