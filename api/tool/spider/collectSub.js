@@ -10,7 +10,7 @@ const { redditSubApi } = require('../../index').v1
 
 // ---- config ----
 const target = 'https://www.reddit.com/r/'  // 目标地址
-const frequency = `*/1 * * * *`             // 统计频率 cron 风格
+const frequency = `*/30 * * * *`             // 统计频率 cron 风格
 const l = pl(5)                             // axios 并发数量
 // ---- config ----
 

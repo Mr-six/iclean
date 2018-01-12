@@ -179,9 +179,9 @@ module.exports.dateformat = function (obj, format) {
   return moment(obj).format(format)
 }
 
-module.exports.msleep = function (n) {
-  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n);
-}
-module.exports.sleep = function (n) {
-  module.exports.msleep(n * 1000);
-}
+// module.exports.msleep = function (n) {
+//   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n);
+// }
+// module.exports.sleep = function (n) {
+//   module.exports.msleep(n * 1000);
+// }

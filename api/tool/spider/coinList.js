@@ -7,14 +7,18 @@ const {  pl }          = require('./utils')
 const { redditSubApi } = require('../../index').v1
 
 
+const header = {
+  'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36'
+}
 
+Object.assign(axios.default, {header})
 
 // ---- config ----
 const base   = 'https://api.coinmarketcap.com/v1/ticker/'  // 目标地址
 const num    = ''                                         // 总数量(不填默认为100)
-const rNum   = 5                                          // 单次爬取数量
+const rNum   = 200                                          // 单次爬取数量
 const target = `${base}?limit=${num}`                     // 请求目标
-const l      = pl(1)                                      // puppeteer并发数量
+const l      = pl(5)                                      // 请求并发数量
 // ---- config ----
 
 
@@ -53,36 +57,36 @@ async function getRedditId (urlArr, start) {
     
     let rList = []  // 请求列表
     urlArr.forEach( (el, i) => {
-      if (i < start || i > start + rNum) return
+      // if (i < start || i > start + rNum) return
       const {id, idUrl} = el
       rList.push(l(async () => {
-        const browser = await pupp.launch({ headless: true})
-        const page = await browser.newPage()
-        await page.goto(idUrl, {
-          timeout: 0,
-          waitUntil: ['networkidle2', 'domcontentloaded']
-        })
-        $.info('goto: ', idUrl)
-        await page.setViewport({
-          width: 1920,
-          height: 1080,
-        })
-        await page.waitForSelector('#reddit a', { timeout: 0 })
-        const rid = await page.$eval('#reddit a', el => el.href.match(/https?.*\/r\/(.*)\//)[1])
-        await page.close()
-        await browser.close()
+        // const browser = await pupp.launch({ headless: true})
+        // const page = await browser.newPage()
+        // await page.goto(idUrl, {
+        //   timeout: 0,
+        //   waitUntil: ['networkidle2', 'domcontentloaded']
+        // })
+        // $.info('goto: ', idUrl)
+        // await page.setViewport({
+        //   width: 1920,
+        //   height: 1080,
+        // })
+        // await page.waitForSelector('#reddit a', { timeout: 0 })
+        // const rid = await page.$eval('#reddit a', el => el.href.match(/https?.*\/r\/(.*)\//)[1])
+        // await page.close()
+        // await browser.close()
+        const { data } = await axios.get(idUrl)
+        const rid = data.match(/www\.reddit\.com\/r\/(.*?)\.embed\?/)[1]
+        if (!rid) return
         $.info({
           id: el.id,
           rid,
+          i
         })
         await redditSubApi.create({
           id,
           rid,
         })
-        // if (i % 5 === 0) {  // 每隔5个休息十秒 等待chrome退出完全
-        //   $.info('等待十秒')
-        //   $.sleep(10)
-        // }
       }))
     })
 
@@ -90,7 +94,6 @@ async function getRedditId (urlArr, start) {
 
     $.info('列表更新完成')
     
-    // await browser.close()
 
   } catch (e) {
     $.error(e)
