@@ -13,10 +13,10 @@ const {
 redditSub.get('/currencies/:id', redditSubApi.getById)       // 查找
 
   .get('/initList', async (ctx) => {   // 初始化列表 
-    const start = ctx.query.start | 0
+    const { start, limit } = ctx.query
     try {
-      let n = await initCoinList(start)
-      ctx.body = `抓取 ${n}条信息` 
+      let n = await initCoinList(start, limit)
+      ctx.body = n 
     } catch (e) {
       console.error(e)
     }

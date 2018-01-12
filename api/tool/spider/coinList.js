@@ -15,9 +15,6 @@ Object.assign(axios.default, {header})
 
 // ---- config ----
 const base   = 'https://api.coinmarketcap.com/v1/ticker/'  // 目标地址
-const num    = ''                                         // 总数量(不填默认为100)
-const rNum   = 200                                          // 单次爬取数量
-const target = `${base}?limit=${num}`                     // 请求目标
 const l      = pl(5)                                      // 请求并发数量
 // ---- config ----
 
@@ -25,11 +22,12 @@ const l      = pl(5)                                      // 请求并发数量
 /**
  * 获取币种id和详情页 url
  */
-async function getCoinList () {
+async function getCoinList(start, limit) {
+  const target = `${base}?start=${start}&limit=${limit}`     // 请求目标
   try {
     const { data } = await axios.get(target, {
       timeout: 30000
-    })                                       // 币种信息列表
+    })                                      // 币种信息列表
     let urlArray = []                       // 币种页面数组
     data.forEach( el => {                   // 遍历列表 提取币种id
       let id = el.id                        // 币种id
@@ -57,27 +55,12 @@ async function getRedditId (urlArr, start) {
     
     let rList = []  // 请求列表
     urlArr.forEach( (el, i) => {
-      // if (i < start || i > start + rNum) return
       const {id, idUrl} = el
       rList.push(l(async () => {
-        // const browser = await pupp.launch({ headless: true})
-        // const page = await browser.newPage()
-        // await page.goto(idUrl, {
-        //   timeout: 0,
-        //   waitUntil: ['networkidle2', 'domcontentloaded']
-        // })
-        // $.info('goto: ', idUrl)
-        // await page.setViewport({
-        //   width: 1920,
-        //   height: 1080,
-        // })
-        // await page.waitForSelector('#reddit a', { timeout: 0 })
-        // const rid = await page.$eval('#reddit a', el => el.href.match(/https?.*\/r\/(.*)\//)[1])
-        // await page.close()
-        // await browser.close()
         const { data } = await axios.get(idUrl)
-        const rid = data.match(/www\.reddit\.com\/r\/(.*?)\.embed\?/)[1]
-        if (!rid) return
+        const _rid = data.match(/www\.reddit\.com\/r\/(.*?)\.embed\?/)
+        if (!_rid || _rid.length < 1) return
+        const rid = _rid[1]
         $.info({
           id: el.id,
           rid,
@@ -101,10 +84,10 @@ async function getRedditId (urlArr, start) {
 }
 
 
-async function initCoinList (start) {
-  let list = await getCoinList()
-  await getRedditId(list, start)
-  return `起始位置: ${start}, 完成抓取${rNum}`
+async function initCoinList (start = 0, num = 100) {
+  let list = await getCoinList(start, num)
+  await getRedditId(list)
+  return `起始位置: ${start}, 完成抓取${num}条列表。列表初始化完成。可开始执行数据抓取。`
 }
 
 module.exports = {
