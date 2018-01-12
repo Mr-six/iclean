@@ -28,7 +28,7 @@ client.on("error", function (err) {
   $.error("redis Error :" , err)
 })
 
-client.on('connect', function(){
+client.once('connect', function(){
   $.info(`redis connect to server:${options.host}:${options.port}`)
 })
 

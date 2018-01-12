@@ -28,7 +28,7 @@ function addMethods(_this) {
     start = Number(start) || 0
     limit = Number(limit)
     if (!$.isEmpty(search)) query[_this.search] = new RegExp(search)
-    $.result(ctx, await _this.model.all(query, start, limit, options))
+    $.result(ctx, await _this.model.all(query, start, limit, q))
   }
 
   methods.create = async function (ctx) {

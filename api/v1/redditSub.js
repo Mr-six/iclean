@@ -25,7 +25,7 @@ redditSubApi.methods.create = async (info) => {
 /**
  * reddit 向订阅表中添加数据
  * @param {String} id 币种id
- * @param {Array} info 某时间此版块的订阅人数
+ * @param {Array} info 某时间此版块的订阅人数和在线人数
  */
 redditSubApi.methods.push = async (id, info) => {
   let exist = await redditSubApi.model.findOne({ id: id })
@@ -36,7 +36,8 @@ redditSubApi.methods.push = async (id, info) => {
   }
 
   let res = await redditSubApi.model.push({ id: id }, {
-    reddit_subscribers_num: info
+    reddit_subscribers_num: info.sub,
+    reddit_active_user_num: info.active
   })
   return res
 }
@@ -46,7 +47,7 @@ redditSubApi.methods.push = async (id, info) => {
  * @param {String} name reddit
  */
 redditSubApi.methods.getall = async (info) => {
-  const res = await redditSubApi.model.all(info)
+  const res = await redditSubApi.model.all(info, null, null, { select: 'id rid'})
   return res
 }
 
