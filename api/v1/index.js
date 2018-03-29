@@ -4,7 +4,6 @@ const orderApi    = require('./order')
 const productApi  = require('./product')
 const uploadApi   = require('./upload')
 const wechatApi   = require('./wechat')
-const redditSubApi = require('./redditSub')
 module.exports    = {
     userApi,
     articleApi,
@@ -12,5 +11,4 @@ module.exports    = {
     orderApi,
     productApi,
     wechatApi,
-    redditSubApi,
 }
